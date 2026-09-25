@@ -29,28 +29,23 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # Runner ubuntu-latest sudah menyediakan Android SDK di $ANDROID_SDK_ROOT.
-      # Kita hanya perlu accept license + install platform/build-tools yang dibutuhkan.
-      - name: Setup Android SDK (manual, tanpa action Node20)
+      # Runner ubuntu-latest sudah menyediakan Android SDK di /usr/local/lib/android/sdk
+      # (foldernya read-only, jadi jangan chmod). Cukup accept license via sdkmanager.
+      - name: Setup Android SDK (accept license)
         env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
           ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: |
           set -e
-          echo "SDK_ROOT=$ANDROID_SDK_ROOT"
-          ls "$ANDROID_SDK_ROOT" || echo "SDK tidak ada di path default"
-
-          SDKMANAGER=$(find /usr/local/lib/android/sdk /usr/lib/android-sdk "$HOME/Android/Sdk" \
-            -name sdkmanager -type f 2>/dev/null | head -1)
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           echo "sdkmanager: $SDKMANAGER"
-          if [ -z "$SDKMANAGER" ]; then
-            echo "::error::sdkmanager tidak ditemukan"
-            exit 1
-          fi
+          test -x "$SDKMANAGER" || { echo "::error::sdkmanager tidak executable"; exit 1; }
 
-          chmod +x "$SDKMANAGER"
+          # Accept semua license (prompt yes sudah otomatis via yes)
           yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
-          "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.0.0" 2>&1 | tail -20
-          "$SDKMANAGER" --list_installed 2>&1 | head -20
+
+          echo "--- paket terinstall ---"
+          "$SDKMANAGER" --list_installed 2>/dev/null | head -30 || true
 
       - name: Tulis local.properties
         run: |
