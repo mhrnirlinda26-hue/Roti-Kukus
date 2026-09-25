@@ -1,0 +1,51 @@
+{
+  "name": "roti-kukus-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next export",
+    "start": "next start",
+    "lint": "eslint",
+    "cap:init": "cap init",
+    "cap:sync": "cap sync",
+    "cap:copy": "npx cap copy",
+    "apk:prepare": "npm run build && npx cap sync android",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@hookform/resolvers": "^5.9.1",
+    "date-fns": "^4.4.0",
+    "idb": "^8.0.3",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^1.48.0",
+    "next": "16.3.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "^7.88.0",
+    "recharts": "^3.10.1",
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.6",
+    "jest": "^30.5.2",
+    "tailwindcss": "^4",
+    "ts-jest": "^29.4.14",
+    "typescript": "^5"
+  },
+  "optionalDependencies": {
+    "@next/swc-win32-x64-msvc": "^16.3.6",
+    "@tailwindcss/oxide-win32-x64-msvc": "^4.3.3"
+  }
+}

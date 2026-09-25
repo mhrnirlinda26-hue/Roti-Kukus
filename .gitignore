@@ -1,0 +1,47 @@
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/.next/
+**/out/
+**/build/
+**/coverage/
+
+# Android build outputs
+**/android/.gradle/
+**/android/app/build/
+**/android/app/release/
+**/android/captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# Binary besar - jangan push (55MB, tidak dibutuhkan untuk build APK)
+roti-kukus-app/cloudflared.exe
+
+# Env & secrets - JANGAN push credentials
+.env
+.env*
+!.env.example
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+*.pem
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel
+.vercel
+
+# OpenCode session (tidak perlu di repo)
+.opencode/
