@@ -29,8 +29,33 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      # Runner ubuntu-latest sudah menyediakan Android SDK di $ANDROID_SDK_ROOT.
+      # Kita hanya perlu accept license + install platform/build-tools yang dibutuhkan.
+      - name: Setup Android SDK (manual, tanpa action Node20)
+        env:
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: |
+          set -e
+          echo "SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls "$ANDROID_SDK_ROOT" || echo "SDK tidak ada di path default"
+
+          SDKMANAGER=$(find /usr/local/lib/android/sdk /usr/lib/android-sdk "$HOME/Android/Sdk" \
+            -name sdkmanager -type f 2>/dev/null | head -1)
+          echo "sdkmanager: $SDKMANAGER"
+          if [ -z "$SDKMANAGER" ]; then
+            echo "::error::sdkmanager tidak ditemukan"
+            exit 1
+          fi
+
+          chmod +x "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.0.0" 2>&1 | tail -20
+          "$SDKMANAGER" --list_installed 2>&1 | head -20
+
+      - name: Tulis local.properties
+        run: |
+          echo "sdk.dir=/usr/local/lib/android/sdk" > roti-kukus-app/android/local.properties
+          cat roti-kukus-app/android/local.properties
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
@@ -45,16 +70,17 @@ jobs:
           fi
           npx cap sync android
 
-      - name: Build APK (debug + release unsigned)
+      - name: Build APK (debug)
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Rename APK
         run: |
-          cp android/app/build/outputs/apk/debug/app-debug.apk android/app/build/outputs/apk/debug/RotiKukusThailand-v1.0-debug.apk
-          ls -lh android/app/build/outputs/apk/debug/
+          cd android/app/build/outputs/apk/debug
+          cp app-debug.apk RotiKukusThailand-v1.0-debug.apk
+          ls -lh
 
       - name: Upload APK (debug)
         uses: actions/upload-artifact@v4
